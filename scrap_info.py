@@ -11,25 +11,27 @@ def get_stats(company):
     if path.exists(p):
         print("saved stats in " + p)
     else:
-
+        #connect to driver
         driver = webdriver.Chrome('chromedriver.exe')
         driver.get('https://craft.co/' + company + '/metrics')
 
-
+        #scrap tables from webpage
         table = driver.find_elements(by=By.TAG_NAME, 
         value='table')
-            
+        
+        #join the outerhtml source code of these tabels
         infos = "\n".join([i.get_attribute('outerHTML') for i in table])
 
-        driver.close()
+        driver.close() #close browser
 
-        tables = pd.read_html(infos)
+        tables = pd.read_html(infos) #use pandas to read these tables
 
+        #save tables
         for i, t in enumerate(tables):
             df = pd.DataFrame(t)
             df.to_csv("data/company_stats/" + company  + f"_{i}.csv")
 
-        print(f"saved {i} tables in " + p)
+        print(f"saved {i+1} tables in " + p)
 
 
 
